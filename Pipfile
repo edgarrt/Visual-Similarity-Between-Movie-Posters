@@ -1,0 +1,39 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+# data related
+requests = "*"
+python-dotenv = "*"
+Pillow = "*"
+opencv-python = "*"
+# data science
+pandas = "*"
+numpy= "*"
+scikit-learn = "*"
+tqdm = "*"
+# nearest neighbors
+annoy = "*"
+# tensorflow
+tensorflow = "*"
+# pytorch
+torch = "*"
+torchtext = "*"
+torchdata = "*"
+torch-summary = "*"
+torchnet = "*"
+pytorch-lightning = "*"
+torchvision = "*"
+
+[dev-packages]
+jupyterlab = "*"
+matplotlib = "*"
+autopep8 = "*"
+flake8 = "*"
+black = "*"
+ipykernel = "*"
+
+[requires]
+python_version = "3.10"

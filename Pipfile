@@ -16,8 +16,6 @@ scikit-learn = "*"
 tqdm = "*"
 # nearest neighbors
 annoy = "*"
-# tensorflow
-tensorflow = "*"
 # pytorch
 torch = "*"
 torchtext = "*"
@@ -26,6 +24,11 @@ torch-summary = "*"
 torchnet = "*"
 pytorch-lightning = "*"
 torchvision = "*"
+# transformers
+transformers = "*"
+# metric learning
+pytorch-metric-learning = "*"
+
 
 [dev-packages]
 jupyterlab = "*"

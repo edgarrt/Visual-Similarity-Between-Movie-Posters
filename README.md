@@ -55,7 +55,3 @@ pipenv shell
 # This launches the notebook env & should open your browser
 jupyter notebook
 ```
-
-
-References:
-- https://www.kaggle.com/code/mishki/resnet-keras-code-from-scratch-train-on-gpu

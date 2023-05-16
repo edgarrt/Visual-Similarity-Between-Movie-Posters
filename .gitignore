@@ -3,5 +3,5 @@
 lightning_logs
 __pycache__
 
-images/
+images/raw/
 secrets.env

@@ -1,13 +1,6 @@
-import cv2
-from torch import tensor
-import numpy as np
 import torch
-import logging
-import losses
-import json
-from tqdm import tqdm
-import torch.nn.functional as F
-import math
+import numpy as np
+
 
 def collate_batch(batch):
     targets_list = []
@@ -22,92 +15,44 @@ def collate_batch(batch):
 
         # append metadata
         metadata_list.append(dict_["metadata"])
-        
+
     images = torch.stack(images_list)
     targets = torch.stack(targets_list)
-    return {
-        "metadata": metadata_list,
-        'image': images, 
-        'targets': targets
-        } 
+    return {"metadata": metadata_list, "image": images, "targets": targets}
 
 
-def l2_norm(input):
-    input_size = input.size()
-    buffer = torch.pow(input, 2)
-    normp = torch.sum(buffer, 1).add_(1e-12)
-    norm = torch.sqrt(normp)
-    _output = torch.div(input, norm.view(-1, 1).expand_as(input))
-    output = _output.view(input_size)
-
-    return output
-
-def calc_recall_at_k(T, Y, k):
-    """
-    T : [nb_samples] (target labels)
-    Y : [nb_samples x k] (k predicted labels/neighbours)
-    """
-
-    s = 0
-    for t,y in zip(T,Y):
-        if t in torch.Tensor(y).long()[:k]:
-            s += 1
-    return s / (1. * len(T))
+def cosine_similarity(x, y):
+    return np.dot(x, y) / (np.linalg.norm(x) * np.linalg.norm(y))
 
 
-def predict_batchwise(model, dataloader):
-    # device = "cuda"
-    # model_is_training = model.training
-    model.eval()
-    
-    ds = 976 #dataloader.val_dataloader()
-    A = [[] for i in range(ds)]
-    with torch.no_grad():
-        # extract batches (A becomes list of samples)
-        # for batch in tqdm(dataloader.val_dataloader()):
-            # for i, (t,J) in enumerate(batch):
-        for i, (target, J) in tqdm(enumerate(dataloader.val_dataloader())):
+def recall_at_k(embeddings, labels, num_classes, k=3):
+    correct_retrievals = 0
+    total_queries = len(embeddings)
 
-                # i = 0: sz_batch * images
-                # i = 1: sz_batch * labels
-                # i = 2: sz_batch * indices
-                if i == 0:
-                    # move images to device of model (approximate device)
-                    J = model(J)
+    for i, query_embedding in enumerate(embeddings):
+        similarities = []
 
-                for j in J:
-                    A[i].append(j)
-    
-    return [torch.stack(A[i]) for i in range(len(A))]
+        for j, candidate_embedding in enumerate(embeddings):
+            if i == j:  # Skip the comparison with itself
+                continue
 
-def proxy_init_calc(model, dataloader):
-    nb_classes = 19
-    X, T, *_ = predict_batchwise(model, dataloader)
+            similarity = cosine_similarity(query_embedding, candidate_embedding)
+            similarities.append((similarity, labels[j]))
 
-    proxy_mean = torch.stack([X[T==class_idx].mean(0) for class_idx in range(nb_classes)])
+        # Sort by similarity in descending order
+        sorted_similarities = sorted(similarities, key=lambda x: x[0], reverse=True)
 
-    return proxy_mean
+        # Get the weighted sum of the top k_neighbors genre indices
+        weighted_genre_indices = np.zeros(num_classes)
 
-def evaluate_cos(model, dataloader):
-    nb_classes = 19
+        for sim, genre in sorted_similarities[:k]:
+            genre_index = np.argmax(genre)
+            weighted_genre_indices[genre_index] += sim
 
-    # calculate embeddings with model and get targets
-    X, T = predict_batchwise(model, dataloader)
-    X = l2_norm(X)
+        # Find the genre index with the highest score
+        predicted_genre_index = np.argmax(weighted_genre_indices)
 
-    # get predictions by assigning nearest 8 neighbors with cosine
-    K = 32
-    Y = []
-    xs = []
-    
-    cos_sim = F.linear(X, X)
-    Y = T[cos_sim.topk(1 + K)[1][:,1:]]
-    Y = Y.float().cpu()
-    
-    recall = []
-    for k in [1, 2, 4, 8, 16, 32]:
-        r_at_k = calc_recall_at_k(T, Y, k)
-        recall.append(r_at_k)
-        print("R@{} : {:.3f}".format(k, 100 * r_at_k))
-
-    return recall
+        # Check if the predicted genre index matches the query movie genre index
+        if predicted_genre_index == np.argmax(labels[i]):
+            correct_retrievals += 1
+    return correct_retrievals / total_queries

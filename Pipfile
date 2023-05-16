@@ -28,6 +28,8 @@ torchvision = "*"
 transformers = "*"
 # metric learning
 pytorch-metric-learning = "*"
+umap-learn = "*"
+plotly = "*"
 
 
 [dev-packages]

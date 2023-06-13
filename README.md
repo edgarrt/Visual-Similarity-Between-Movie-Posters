@@ -1,5 +1,10 @@
 # Final Project: Visual Similarity Between Movie Posters
 
+## Implementation of [Classifying_Movie_Poster_Genres_with_Deep_Metric_Learning.pdf](https://github.com/edgarrt/Visual-Similarity-Between-Movie-Posters/blob/master/report/Classifying_Movie_Poster_Genres_with_Deep_Metric_Learning.pdf)
+
+
+---
+
 ## Project Highlights
 - leverage a base ResNet model combined with proxy anchor loss to learn an embedding space for movie posters.
 

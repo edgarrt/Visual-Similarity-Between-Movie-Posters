@@ -1,5 +1,23 @@
 # Final Project: Visual Similarity Between Movie Posters
 
+## Project Highlights
+- leverage a base ResNet model combined with proxy anchor loss to learn an embedding space for movie posters.
+
+## Previous Work
+Research draws upon previous work in convolutional neural networks, movie genre classification, and metric learning. The ResNet architecture, proxy anchor loss, and deep metric learning methods are some of the notable techniques utilized.
+
+## Technical Approach
+The following key steps make up the project workflow:
+- Data Collection and Preprocessing: Movie poster dataset collected from themoviedb.org and preprocessed for uniform size, normalization, and data augmentation.
+- Network Architecture: Using ResNet50 as the backbone for our embedding model.
+- Learning Method: Employing the Proxy Anchor Loss to train the ResNet50-based embedding model.
+- Model Training: Utilizing PyTorch and PyTorch Lightning for training.
+- Evaluation and Testing: Evaluating the model with Recall@K metric.
+- Similar Movie Posters Retrieval: Using Approximate Nearest Neighbors (ANN) to retrieve similar movie posters.
+
+## Dataset and Implementation
+Created a new movie dataset by leveraging themoviedb.org's API. This decision was because existing public movie datasets did not contain recent movie releases and had issues with acquiring the movie poster image files. The API provided data for 10,000 popular movies.
+
 
 ## Getting started with development
 
@@ -55,3 +73,9 @@ pipenv shell
 # This launches the notebook env & should open your browser
 jupyter notebook
 ```
+
+## License
+Visual Similarity Between Movie Posters is available under the MIT license. See the LICENSE file for more info.
+
+## Author
+Developed by [Edgar Trujillo](https://www.linkedin.com/in/trujilloedgar/)

@@ -4,4 +4,4 @@ lightning_logs
 __pycache__
 
 images/raw/
-secrets.env
+*.env
